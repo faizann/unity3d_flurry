@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
+	
 public class NerdFlurry : MonoBehaviour {
 	
 #if UNITY_ANDROID
@@ -60,6 +62,39 @@ public class NerdFlurry : MonoBehaviour {
 		}
 	}
 	
+	public void LogEvent (string eventId, Dictionary<string, string> parameters, bool timed=false)
+	{
+		using(AndroidJavaObject obj_HashMap = new AndroidJavaObject("java.util.HashMap")) 
+    	{
+
+	        // Call 'put' via the JNI instead of using helper classes to avoid:
+	        //  "JNI: Init'd AndroidJavaObject with null ptr!"
+	        System.IntPtr method_Put = AndroidJNIHelper.GetMethodID(obj_HashMap.GetRawClass(), "put", 
+	
+	            "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+	
+	        object[] args = new object[2];
+	
+	        foreach(KeyValuePair<string, string> kvp in parameters)
+	        {
+	            using(AndroidJavaObject k = new AndroidJavaObject("java.lang.String", kvp.Key))
+	            {
+	                using(AndroidJavaObject v = new AndroidJavaObject("java.lang.String", kvp.Value))
+	                {
+	                    args[0] = k;
+	                    args[1] = v;
+	                    AndroidJNI.CallObjectMethod(obj_HashMap.GetRawObject(), 
+	                        method_Put, AndroidJNIHelper.CreateJNIArgArray(args));
+	                }
+	            }
+	        }
+			if(timed==false)
+	        	mFlurryClass.CallStatic("logEvent", eventId, obj_HashMap);
+			else
+				mFlurryClass.CallStatic("logEvent", eventId, obj_HashMap,true);
+		}
+	}
+	
 	public void EndTimedEvent(string eventId)
 	{
 		if(Application.platform==RuntimePlatform.Android)
@@ -109,6 +144,16 @@ public class NerdFlurry : MonoBehaviour {
     private static extern void NerdFlurry_logEvent([In, MarshalAs(UnmanagedType.LPStr)]string evendId);
 	
 	[DllImport("__Internal", CharSet = CharSet.Ansi)]
+    private static extern void NerdFlurry_logEventWithParameters(
+				[In, MarshalAs(UnmanagedType.LPStr)]string evendId, 
+				[In, MarshalAs(UnmanagedType.LPStr)]string parameters);
+	
+	[DllImport("__Internal", CharSet = CharSet.Ansi)]
+    private static extern void NerdFlurry_logEventWithParametersTimed(
+				[In, MarshalAs(UnmanagedType.LPStr)]string evendId, 
+				[In, MarshalAs(UnmanagedType.LPStr)]string parameters);
+	
+	[DllImport("__Internal", CharSet = CharSet.Ansi)]
     private static extern void NerdFlurry_logEventTimed([In, MarshalAs(UnmanagedType.LPStr)]string evendId);
 	
 	[DllImport("__Internal", CharSet = CharSet.Ansi)]
@@ -146,6 +191,19 @@ public class NerdFlurry : MonoBehaviour {
 			NerdFlurry_logEventTimed(eventId);
 	}
 	
+	public void LogEvent(string eventId, Dictionary<string, string> parameters, bool timed=false)
+	{
+		string strParams = "";
+		foreach(KeyValuePair<string, string> kvp in parameters)
+	    {
+			strParams += kvp.Key +"="+kvp.Value+"\n";
+		}
+		if(timed==false)
+			NerdFlurry_logEventWithParameters(eventId,strParams);
+		else
+			NerdFlurry_logEventWithParametersTimed(eventId,strParams);
+	}
+	
 	public void EndTimedEvent(string eventId)
 	{
 		NerdFlurry_endTimedEvent(eventId);
@@ -177,7 +235,10 @@ public class NerdFlurry : MonoBehaviour {
 	{
 	
 	}
-	
+	public void LogEvent(string eventId, Dictionary<string, string> parameters, bool timed=false)
+	{
+		
+	}
 	public void EndTimedEvent(string eventId)
 	{
 	

@@ -80,3 +80,54 @@ void NerdFlurry_endTimedEvent(unsigned char* eventId) // we accept no parameters
 {
   [Flurry endTimedEvent:[NSString stringWithUTF8String:eventId] withParameters:nil];
 }
+
+
+void NerdFlurry_logEventWithParameters(unsigned char* eventId,unsigned char *parameters)
+{
+  NSString *params = [NSString stringWithUTF8String:parameters];
+  NSArray *arr = [params componentsSeparatedByString: @"\n"];
+  NSMutableDictionary *pdict = [[[NSMutableDictionary alloc] init] autorelease];
+  NSLog(@"Number of params %lu\n",[arr count]);
+  for(int i=0;i < [arr count]; i++)
+  {
+    NSString *str1 = [arr objectAtIndex:i];
+    NSRange range = [str1 rangeOfString:@"="];
+    if (range.location!=NSNotFound) {
+      NSString *key = [str1 substringToIndex:range.location];
+      NSString *val = [str1 substringFromIndex:range.location+1];
+      NSLog(@"kv %@=%@\n",key,val);
+      [pdict setObject:val forKey:key];
+    }
+  }
+  if([pdict count]>0)
+  {
+    [Flurry logEvent:[NSString stringWithUTF8String:eventId] withParameters:pdict timed:false];
+  }
+  else
+    NerdFlurry_logEvent(eventId);
+}
+
+void NerdFlurry_logEventWithParametersTimed(unsigned char* eventId,unsigned char *parameters)
+{
+  NSString *params = [NSString stringWithUTF8String:parameters];
+  NSArray *arr = [params componentsSeparatedByString: @"\n"];
+  NSMutableDictionary *pdict = [[[NSMutableDictionary alloc] init] autorelease];
+  NSLog(@"Number of params %lu\n",[arr count]);
+  for(int i=0;i < [arr count]; i++)
+  {
+    NSString *str1 = [arr objectAtIndex:i];
+    NSRange range = [str1 rangeOfString:@"="];
+    if (range.location!=NSNotFound) {
+      NSString *key = [str1 substringToIndex:range.location];
+      NSString *val = [str1 substringFromIndex:range.location+1];
+      NSLog(@"kv %@=%@\n",key,val);
+      [pdict setObject:val forKey:key];
+    }
+  }
+  if([pdict count]>0)
+  {
+    [Flurry logEvent:[NSString stringWithUTF8String:eventId] withParameters:pdict timed:true];
+  }
+  else
+    NerdFlurry_logEventTimed(eventId);
+}

@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
 
 public class NerdFlurryUI : MonoBehaviour {
 	
@@ -31,10 +33,28 @@ public class NerdFlurryUI : MonoBehaviour {
 		{
 			mNerdFlurry.LogEvent("Event 2");
 		}
+		if(GUILayout.Button("Log Event 1 with params", GUILayout.Height(60)))
+		{
+			Dictionary<string, string> kvps = new Dictionary<string, string>();
+			kvps.Add("GameName","MyGame");
+			kvps.Add("Level","Level1");
+			mNerdFlurry.LogEvent("Event 3",kvps);
+		}
+		
+		if(GUILayout.Button("Timed Log Event 1 with params", GUILayout.Height(60)))
+		{
+			Dictionary<string, string> kvps = 	 new Dictionary<string, string>();
+			kvps.Add("GameName","MyGame");
+			kvps.Add("Level","Level1");
+			mNerdFlurry.LogEvent("Timer 2",kvps,true);
+		}
 		
 		if(GUILayout.Button("Timed Event Start", GUILayout.Height(60)))
 		{
-			mNerdFlurry.LogEvent("Timer 2",true);
+			Dictionary<string, string> kvps = 	 new Dictionary<string, string>();
+			kvps.Add("TGameName","MyGame");
+			kvps.Add("TLevel","Level1");
+			mNerdFlurry.LogEvent("Timer 2",kvps,true);
 		}
 		
 		if(GUILayout.Button("Timed Event End", GUILayout.Height(60)))

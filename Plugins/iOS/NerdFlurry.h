@@ -27,6 +27,8 @@ extern "C" {
   void NerdFlurry_setSessionReportsOnPauseEnabled(BOOL bEnabled);
   void NerdFlurry_setUserID(unsigned char* userId);
   void NerdFlurry_logEvent(unsigned char* eventId);
+  void NerdFlurry_logEventWithParameters(unsigned char* eventId,unsigned char *parameters);
+  void NerdFlurry_logEventWithParametersTimed(unsigned char* eventId,unsigned char *parameters);
   void NerdFlurry_logEventTimed(unsigned char* eventId);
   void NerdFlurry_endTimedEvent(unsigned char* eventId); // we accept no parameters
 }
