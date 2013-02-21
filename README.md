@@ -6,6 +6,8 @@ Author: Faizan Naqvi<br>
 Company: Nerdiacs<br>
 Website: http://www.Nerdiacs.com
 
+Licence: The code is free to use under LGPL licencing which means you can use it in commercial applications. 
+http://www.gnu.org/licenses/lgpl.txt
 
 Usage
 
