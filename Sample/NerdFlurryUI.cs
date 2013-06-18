@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class NerdFlurryUI : MonoBehaviour {
 	
-	private string FLURRY_API_KEY = "BQTJ2PM33Q5KNKFV23VG";	
+	private string FLURRY_API_KEY = "YOUR_API_KEY";	
 	private NerdFlurry mNerdFlurry = null;
 	// Use this for initialization
 	void Start () {
